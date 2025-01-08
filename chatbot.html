@@ -28,6 +28,40 @@
             transition: opacity 0.3s ease-out, transform 0.3s ease-out;
         }
 
+        @media screen and (max-width: 768px) {
+            #chatbot {
+                width: 99vw;
+                height: 90vh;
+                bottom: 100px;
+                top:5px;
+                right: 0;
+                left: 0;
+                border-radius: 10px;
+                /* Remove rounded corners for fullscreen */
+            }
+
+            #chat-header {
+                font-size: 20px;
+                /* Adjust header font size for smaller screens */
+            }
+
+            #chat-box {
+                padding: 15px;
+                /* Increase padding for better usability */
+            }
+
+            #chat-input-container {
+                padding: 10px;
+                /* Adjust padding for input area */
+            }
+
+            #predefined-questions {
+                padding: 5px;
+                /* Adjust padding for predefined questions */
+            }
+        }
+
+
         /* Keyframes for entry */
         @keyframes enterChatbot {
             from {
