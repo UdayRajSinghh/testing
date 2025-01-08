@@ -294,6 +294,8 @@
         <div id="chat-header">
             <img id="logo" src="logo.png" alt="Logo" />
             ZENCIA
+            <!-- Toggle button added -->
+            <span id="chat-header-toggle" style="margin-left:auto; cursor:pointer;">-</span>
         </div>
         <div id="chat-box"></div>
         <div id="predefined-questions">
@@ -339,6 +341,14 @@
     </div>
 
     <script>
+        document.getElementById("chat-header-toggle").addEventListener("click", () => {
+            const chatBot = document.getElementById("chatbot");
+            if (chatBot.style.display === "none") {
+                chatBot.style.display = "flex";
+            } else {
+                chatBot.style.display = "none";
+            }
+        });
         (function () {
             const style = document.createElement("style");
             style.innerHTML = `/* styles already provided above */`;
