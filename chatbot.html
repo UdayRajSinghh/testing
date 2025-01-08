@@ -29,37 +29,28 @@
         }
 
         @media screen and (max-width: 768px) {
-            #chatbot {
-                width: 99vw;
-                height: 90vh;
-                bottom: 100px;
-                top:5px;
-                right: 0;
-                left: 0;
-                border-radius: 10px;
-                /* Remove rounded corners for fullscreen */
-            }
+    #chatbot {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        border-radius: 0;
+        max-width: none;
+    }
 
-            #chat-header {
-                font-size: 20px;
-                /* Adjust header font size for smaller screens */
-            }
+    #chat-box {
+        height: calc(100vh - 160px); /* Adjust based on header and input heights */
+    }
 
-            #chat-box {
-                padding: 15px;
-                /* Increase padding for better usability */
-            }
-
-            #chat-input-container {
-                padding: 10px;
-                /* Adjust padding for input area */
-            }
-
-            #predefined-questions {
-                padding: 5px;
-                /* Adjust padding for predefined questions */
-            }
-        }
+    #chat-toggle {
+        display: none; /* Hide the toggle button on mobile */
+    }
+}
 
 
         /* Keyframes for entry */
