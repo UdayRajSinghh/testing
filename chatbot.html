@@ -8,7 +8,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chatbot</title>
     <style>
-        /* Add styles dynamically for the chatbot */
         /* Chatbot container */
         #chatbot {
             position: fixed;
@@ -28,80 +27,81 @@
             transition: opacity 0.3s ease-out, transform 0.3s ease-out;
         }
 
+        /* Mobile styles */
         @media screen and (max-width: 768px) {
             #chatbot {
-                width: 99vw;
-                height: 90vh;
-                bottom: 100px;
-                top:5px;
-                right: 0;
+                position: fixed;
+                top: 0;
                 left: 0;
-                border-radius: 10px;
-                /* Remove rounded corners for fullscreen */
+                right: 0;
+                bottom: 0;
+                width: 100vw;
+                height: 100vh;
+                margin: 0;
+                padding: 0;
+                border-radius: 0;
+                max-width: none;
+            }
+
+            #chat-box {
+                height: calc(100vh - 160px);
             }
 
             #chat-header {
                 font-size: 20px;
-                /* Adjust header font size for smaller screens */
             }
 
             #chat-box {
                 padding: 15px;
-                /* Increase padding for better usability */
             }
 
             #chat-input-container {
                 padding: 10px;
-                /* Adjust padding for input area */
             }
 
             #predefined-questions {
                 padding: 5px;
-                /* Adjust padding for predefined questions */
+            }
+
+            #chat-toggle {
+                display: none;
             }
         }
 
-
-        /* Keyframes for entry */
+        /* Entry animation */
         @keyframes enterChatbot {
             from {
                 opacity: 0;
                 transform: translateY(20px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
 
-        /* Keyframes for exit */
+        /* Exit animation */
         @keyframes exitChatbot {
             from {
                 opacity: 1;
                 transform: translateY(0);
             }
-
             to {
                 opacity: 0;
                 transform: translateY(20px);
             }
         }
 
-        /* Apply the entry animation */
+        /* Open state */
         #chatbot.open {
             display: flex;
-            /* Make chatbot visible */
             animation: enterChatbot 0.3s forwards;
-            /* Trigger animation on opening */
         }
 
-        /* Apply the exit animation */
+        /* Closing state */
         #chatbot.closing {
             animation: exitChatbot 0.3s forwards;
-            /* Trigger animation on closing */
             pointer-events: none;
-            /* Disable interaction during closing animation */
         }
 
         /* Chat Header */
@@ -113,20 +113,15 @@
             align-items: center;
             justify-content: flex-start;
             font-family: 'Roboto', sans-serif;
-            /* Apply modern sans-serif font */
             font-weight: 500;
-            /* Slightly bold */
             font-size: 25px;
-            /* Adjust font size */
             cursor: pointer;
         }
 
         #logo {
             width: 50px;
-            /* Adjust the size of the logo */
             height: auto;
             margin-right: 10px;
-            /* Space between the logo and the text */
         }
 
         /* Chat Box */
@@ -139,54 +134,34 @@
             flex-direction: column;
             position: relative;
             padding-bottom: 20px;
-            /* Space for input area */
         }
 
-        /* User message styling */
+        /* Message styling */
         .user-message {
             background: #ff4545;
-            /* Red background for user */
             color: #fff;
-            /* White text color */
             align-self: flex-end;
-            /* Align to the right */
             padding: 10px;
-            /* Add padding for better readability */
             margin-top: 5px;
-            /* Add space between messages */
             margin-right: 10px;
-            /* Add some space from the right */
             border-radius: 10px 10px 0 10px;
-            /* Rounded corners on the top-right */
             max-width: 70%;
-            /* Limit the width for readability */
             word-wrap: break-word;
-            /* Ensure long words break properly */
         }
 
-        /* Bot message styling */
         .bot-message {
             background: #e2e2e2;
-            /* Light grey background for bot */
             color: #000;
-            /* Black text color */
             align-self: flex-start;
-            /* Align to the left */
             padding: 10px;
-            /* Add padding for better readability */
             margin-top: 5px;
-            /* Add space between messages */
             margin-left: 10px;
-            /* Add some space from the left */
             border-radius: 10px 10px 10px 0;
-            /* Rounded corners on the top-left */
             max-width: 70%;
-            /* Limit the width for readability */
             word-wrap: break-word;
-            /* Ensure long words break properly */
         }
 
-        /* Chat Input Container */
+        /* Input area */
         #chat-input-container {
             display: flex;
             padding: 10px;
@@ -194,40 +169,31 @@
             border-top: 1px solid #ccc;
         }
 
-        /* Chat Input */
         #chat-input {
             flex: 1;
             padding: 6px;
-            /* Reduced padding */
             font-size: 14px;
-            /* Smaller font size */
             border: 1px solid #ccc;
             border-radius: 5px;
         }
 
-        /* Send Button */
         #send-button {
             padding: 6px 12px;
-            /* Reduced padding */
             margin-left: 8px;
-            /* Adjusted margin */
             background: #da0000;
             border: none;
             border-radius: 5px;
             color: #fff;
             cursor: pointer;
             width: 24px;
-            /* Smaller width */
             height: 24px;
-            /* Smaller height */
         }
 
-        /* Send Button Hover */
         #send-button:hover {
             background: #d46d6d;
         }
 
-        /* Chat Toggle (open/close button) */
+        /* Chat toggle button */
         #chat-toggle {
             position: fixed;
             bottom: 20px;
@@ -243,32 +209,26 @@
             font-size: 24px;
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 9999;
+            z-index: 9998;
             transition: transform 0.3s ease;
-            /* Smooth transition for chat button */
         }
 
-        /* Rotate the button when chat is open */
         #chat-toggle.rotate {
             transform: rotate(45deg);
-            /* Rotate the button when chat is open */
         }
 
-        /* Chat Toggle SVG (icon) */
         #chat-toggle svg {
             fill: #fff;
             width: 30px;
             height: 30px;
             transition: transform 0.3s ease;
-            /* Smooth transition for SVG icon */
         }
 
-        /* Rotate the SVG when chat is open */
         #chat-toggle svg.rotate {
             transform: rotate(45deg);
-            /* Rotate the X icon */
         }
 
+        /* Banner */
         #google-banner {
             text-align: center;
             font-size: 12px;
@@ -280,23 +240,18 @@
             font-family: 'Roboto', sans-serif;
         }
 
+        /* Predefined questions */
         #predefined-questions {
             display: flex;
             gap: 10px;
             padding: 10px;
             background: #f9f9f9;
             overflow-x: auto;
-            /* Enable horizontal scrolling */
             overflow-y: hidden;
-            /* Prevent vertical scrolling */
             white-space: nowrap;
-            /* Prevent wrapping of buttons */
             -webkit-overflow-scrolling: touch;
-            /* Smooth scrolling on iOS */
             scrollbar-width: thin;
-            /* Optional: Customize scrollbar appearance */
         }
-
 
         .question-button {
             background-color: #da0000;
@@ -312,12 +267,11 @@
             background-color: #d46d6d;
         }
 
-        /* Predefined questions fade-out animation */
+        /* Questions fade-out animation */
         @keyframes fadeOutQuestions {
             from {
                 opacity: 1;
             }
-
             to {
                 opacity: 0;
             }
@@ -326,10 +280,8 @@
         #predefined-questions.fade-out {
             animation: fadeOutQuestions 1s forwards;
             pointer-events: none;
-            /* Disable interaction during fade-out */
         }
 
-        /* Add a class to ensure the questions are fully removed after fade-out */
         #predefined-questions.hidden {
             display: none;
         }
