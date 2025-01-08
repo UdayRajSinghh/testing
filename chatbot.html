@@ -143,7 +143,7 @@
             align-self: flex-end;
             padding: 10px;
             margin-top: 5px;
-            margin-right: 10px;
+            /* margin-right: 10px; */
             border-radius: 10px 10px 0 10px;
             max-width: 70%;
             word-wrap: break-word;
@@ -155,7 +155,7 @@
             align-self: flex-start;
             padding: 10px;
             margin-top: 5px;
-            margin-left: 10px;
+            margin-left: 0px;
             border-radius: 10px 10px 10px 0;
             max-width: 70%;
             word-wrap: break-word;
@@ -285,6 +285,89 @@
         #predefined-questions.hidden {
             display: none;
         }
+
+        .message-container {
+            display: flex;
+            flex-direction: column;
+            margin: 5px 0;
+            width: fit-content; /* Change from max-width to fit-content */
+            max-width: 85%;    /* Keep max-width as a constraint */
+        }
+
+        .bot-message-container {
+            align-self: flex-start;
+            margin-left: 10px;
+        }
+
+        .user-message-container {
+            align-self: flex-end;
+            margin-right: 10px;
+        }
+
+        .user-message {
+            background: #ff4545;
+            color: #fff;
+            padding: 12px 16px;
+            margin-top: 5px;
+            border-radius: 10px 10px 0 10px;
+            word-wrap: break-word;
+            width: fit-content; /* Make it fit the content */
+            display: inline-block; /* Allow content to determine width */
+            max-width: 100%;    /* Ensure it doesn't overflow container */
+        }
+
+        .bot-message {
+            background: #e2e2e2;
+            color: #000;
+            padding: 12px 16px;
+            margin-top: 5px;
+            border-radius: 10px 10px 10px 0;
+            word-wrap: break-word;
+            width: fit-content; /* Make it fit the content */
+            display: inline-block; /* Allow content to determine width */
+            max-width: 100%;    /* Ensure it doesn't overflow container */
+        }
+
+        /* Copy button styles */
+        .copy-button {
+            background: #868686;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 4px;
+            opacity: 0.8;
+            align-self: flex-start;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+
+        .copy-button:hover {
+            opacity: 1;
+            background: #616161;
+        }
+
+        .copy-icon {
+            width: 12px;
+            height: 12px;
+            fill: currentColor;
+        }
+
+        /* Copy success animation */
+        @keyframes copySuccess {
+            0% { background: #4CAF50; }
+            90% { background: #4CAF50; }
+            100% { background: #424242; }
+        }
+
+        .copy-success {
+            animation: copySuccess 1.5s forwards;
+        }
+    </style>
     </style>
 </head>
 
@@ -341,52 +424,12 @@
     </div>
 
     <script>
-        const chatBot = document.getElementById("chatbot");
-        const chatHeaderToggle = document.getElementById("chat-header-toggle");
-        const chatToggleSVG = document.getElementById("chat-toggle-svg");
-
-        // Toggle chat visibility
-        chatHeaderToggle.addEventListener("click", () => {
-            if (chatBot.style.display === "none" || chatBot.style.display === "") {
-                chatBot.style.display = "flex"; // Show chatbot
-                resetToggleSVG(true);
-            } else {
-                chatBot.style.display = "none"; // Hide chatbot
-                resetToggleSVG(false);
-            }
-        });
-
-        // Reset the toggle SVG to its initial state
-        function resetToggleSVG(isOpen) {
-            if (isOpen) {
-                chatToggleSVG.innerHTML = `
-                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                    <g transform="rotate(-90 12 12)">
-        <path d="M3 5V20.7929C3 21.2383 3.53857 21.4614 3.85355 21.1464L7.70711 17.2929C7.89464 17.1054 8.149 17 8.41421 17H19C20.1046 17 21 16.1046 21 15V5C21 3.89543 20.1046 3 19 3H5C3.89543 3 3 3.89543 3 5Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-        <path d="M15 12C14.2005 12.6224 13.1502 13 12 13C10.8498 13 9.79952 12.6224 9 12" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-        <path d="M9 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-        <path d="M15 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-    </g>
-                `;
-            } else {
-                chatToggleSVG.innerHTML = `
-                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                    <g transform="rotate(-90 12 12)">
-        <path d="M3 5V20.7929C3 21.2383 3.53857 21.4614 3.85355 21.1464L7.70711 17.2929C7.89464 17.1054 8.149 17 8.41421 17H19C20.1046 17 21 16.1046 21 15V5C21 3.89543 20.1046 3 19 3H5C3.89543 3 3 3.89543 3 5Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-        <path d="M15 12C14.2005 12.6224 13.1502 13 12 13C10.8498 13 9.79952 12.6224 9 12" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-        <path d="M9 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-        <path d="M15 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-    </g>
-                `;
-            }
-        }
         (function () {
             const style = document.createElement("style");
+            const chatHeaderToggle = document.getElementById("chat-header-toggle");
             style.innerHTML = `/* styles already provided above */`;
             document.head.appendChild(style);
-
+    
             const chatBot = document.getElementById("chatbot");
             const chatToggle = document.getElementById("chat-toggle");
             const chatBox = document.getElementById("chat-box");
@@ -396,44 +439,53 @@
             const predefinedQuestions = document.getElementById("predefined-questions");
             const BACKEND_URL = "https://flask-backend-881590070859.us-central1.run.app/";
 
+            chatHeaderToggle.addEventListener("click", () => {
+            if (chatBot.style.display === "none" || chatBot.style.display === "") {
+                chatBot.style.display = "flex"; // Show chatbot
+                resetToggleSVG(true);
+            } else {
+                chatBot.style.display = "none"; // Hide chatbot
+                resetToggleSVG(false);
+            }
+        });
+    
             // Ensure chat is initially hidden
             chatBot.style.display = 'none';
-
+    
             // Flag to track if the first message has been sent
             let isFirstMessage = true;
-
+    
             // Function to handle the first message sent and fade out predefined questions
             const handleFirstMessage = () => {
                 if (isFirstMessage) {
                     predefinedQuestions.classList.add("fade-out"); // Apply fade-out animation
-
+    
                     // After the fade-out completes, hide the questions completely
                     setTimeout(() => {
                         predefinedQuestions.classList.add("hidden"); // Hide the questions entirely
                     }, 1000); // Match the duration of the fade-out animation (1s)
-
+    
                     isFirstMessage = false; // Set flag to false after first message
                 }
             };
-
+    
             // Toggle button functionality
             chatToggle.addEventListener("click", () => {
                 if (chatBot.style.display === "none") {
                     chatBot.style.display = "flex"; // Show chatbot
                     chatBot.classList.add("open"); // Apply open animation
-
+    
                     // Change to close (X) icon
                     chatToggleSVG.innerHTML = ` 
                     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                     <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
                     <g transform="rotate(-90 12 12)">
-        <path d="M3 5V20.7929C3 21.2383 3.53857 21.4614 3.85355 21.1464L7.70711 17.2929C7.89464 17.1054 8.149 17 8.41421 17H19C20.1046 17 21 16.1046 21 15V5C21 3.89543 20.1046 3 19 3H5C3.89543 3 3 3.89543 3 5Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-        <path d="M15 12C14.2005 12.6224 13.1502 13 12 13C10.8498 13 9.79952 12.6224 9 12" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-        <path d="M9 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-        <path d="M15 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-    </g>
-                `;
-
+                        <path d="M3 5V20.7929C3 21.2383 3.53857 21.4614 3.85355 21.1464L7.70711 17.2929C7.89464 17.1054 8.149 17 8.41421 17H19C20.1046 17 21 16.1046 21 15V5C21 3.89543 20.1046 3 19 3H5C3.89543 3 3 3.89543 3 5Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M15 12C14.2005 12.6224 13.1502 13 12 13C10.8498 13 9.79952 12.6224 9 12" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M9 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M15 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </g>`;
+    
                     chatToggle.classList.add("rotate"); // Rotate the button when open
                     chatToggleSVG.classList.add("rotate"); // Rotate the SVG when open
                 } else {
@@ -442,6 +494,7 @@
                         chatBot.style.display = "none"; // Hide chatbot after animation
                         chatBot.classList.remove("open", "closing"); // Remove animation classes
                     }, 300); // Match duration of animation
+    
                     // Change back to open chat icon
                     chatToggleSVG.innerHTML = `
                     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -451,54 +504,141 @@
                         <path d="M15 12C14.2005 12.6224 13.1502 13 12 13C10.8498 13 9.79952 12.6224 9 12" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                         <path d="M9 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                         <path d="M15 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                    </g>
-                `;
+                    </g>`;
                     chatToggle.classList.remove("rotate"); // Remove rotation on close
                     chatToggleSVG.classList.remove("rotate"); // Remove rotation from SVG on close
                 }
             });
-
+    
             const appendMessage = (message, type) => {
-                const messageElement = document.createElement("div");
-                messageElement.className = `${type === "user" ? "user-message" : "bot-message"}`;
-                messageElement.textContent = message;
-                chatBox.appendChild(messageElement);
-                chatBox.scrollTop = chatBox.scrollHeight;
-            };
+    const messageContainer = document.createElement("div");
+    messageContainer.className = `message-container ${type}-message-container`;
 
-            const appendTypingEffect = (message, delay = 25) => {
-                const messageElement = document.createElement("div");
-                messageElement.className = "bot-message";
-                chatBox.appendChild(messageElement);
+    const messageElement = document.createElement("div");
+    messageElement.className = `${type}-message`;
+    
+    // Format the message
+    const formattedMessage = message
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+        .replace(/\*\s/g, "<br>• ");
+    
+    messageElement.innerHTML = formattedMessage;
+    messageContainer.appendChild(messageElement);
 
-                // Apply formatting to the message
-                const formattedMessage = message
-                    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // Bold for text between '**'
-                    .replace(/\*\s/g, "<br>• "); // Line break and bullet for '* '
+    // Add copy button only for bot messages
+    if (type === "bot") {
+        const copyButton = document.createElement("button");
+        copyButton.className = "copy-button";
+        copyButton.innerHTML = `
+            <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+            </svg>
+            Copy
+        `;
+        copyButton.addEventListener("click", async () => {
+            try {
+                // Get the formatted text content, preserving line breaks and bullet points
+                const textToCopy = messageElement.innerText;
+                await navigator.clipboard.writeText(textToCopy);
+                copyButton.innerHTML = `
+                    <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+                    </svg>
+                    Copied!
+                `;
+                copyButton.classList.add("copy-success");
+                setTimeout(() => {
+                    copyButton.innerHTML = `
+                        <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                        </svg>
+                        Copy
+                    `;
+                    copyButton.classList.remove("copy-success");
+                }, 1500);
+            } catch (err) {
+                console.error("Failed to copy message:", err);
+            }
+        });
+        messageContainer.appendChild(copyButton);
+    }
 
-                // Display message progressively
-                let index = 0;
-                const interval = setInterval(() => {
-                    messageElement.innerHTML = formattedMessage.slice(0, index);
-                    index++;
-                    chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
-                    if (index > formattedMessage.length) {
-                        clearInterval(interval); // Stop typing effect when done
-                    }
-                }, delay);
-            };
+    chatBox.appendChild(messageContainer);
+    chatBox.scrollTop = chatBox.scrollHeight;
+};
 
+const appendTypingEffect = (message, delay = 25) => {
+    const messageContainer = document.createElement("div");
+    messageContainer.className = "message-container bot-message-container";
 
+    const messageElement = document.createElement("div");
+    messageElement.className = "bot-message";
+    messageContainer.appendChild(messageElement);
+
+    // Add copy button
+    const copyButton = document.createElement("button");
+    copyButton.className = "copy-button";
+    copyButton.innerHTML = `
+        <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+        </svg>
+        Copy
+    `;
+    
+    const formattedMessage = message
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+        .replace(/\*\s/g, "<br>• ");
+
+    chatBox.appendChild(messageContainer);
+
+    let index = 0;
+    const interval = setInterval(() => {
+        messageElement.innerHTML = formattedMessage.slice(0, index);
+        index++;
+        chatBox.scrollTop = chatBox.scrollHeight;
+        if (index > formattedMessage.length) {
+            clearInterval(interval);
+            // Add copy button after typing effect is complete
+            copyButton.addEventListener("click", async () => {
+                try {
+                    // Get the formatted text content, preserving line breaks and bullet points
+                    const textToCopy = messageElement.innerText;
+                    await navigator.clipboard.writeText(textToCopy);
+                    copyButton.innerHTML = `
+                        <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+                        </svg>
+                        Copied!
+                    `;
+                    copyButton.classList.add("copy-success");
+                    setTimeout(() => {
+                        copyButton.innerHTML = `
+                            <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                            </svg>
+                            Copy
+                        `;
+                        copyButton.classList.remove("copy-success");
+                    }, 1500);
+                } catch (err) {
+                    console.error("Failed to copy message:", err);
+                }
+            });
+            messageContainer.appendChild(copyButton);
+        }
+    }, delay);
+};
+    
             const sendMessage = async () => {
                 const userMessage = chatInput.value.trim();
                 if (!userMessage) return;
-
+    
                 appendMessage(userMessage, "user");
                 chatInput.value = "";
-
+    
                 // Trigger fade-out effect for predefined questions after the first message
                 handleFirstMessage();
-
+    
                 try {
                     const response = await fetch(`${BACKEND_URL}/chat`, {
                         method: "POST",
@@ -511,34 +651,34 @@
                     appendMessage("Error: Could not connect to the backend server.", "bot");
                 }
             };
-
+    
             // Handle predefined question button click
             const addQuestion = async (question) => {
-                appendMessage(question, "user"); // Append the question as a user message
-                chatInput.value = ""; // Clear the chat input
-
+                appendMessage(question, "user");
+                chatInput.value = "";
+    
                 // Trigger fade-out effect for predefined questions after the first message
                 handleFirstMessage();
-
+    
                 try {
                     const response = await fetch(`${BACKEND_URL}/chat`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ message: question }), // Use 'question' instead of 'userMessage'
+                        body: JSON.stringify({ message: question }),
                     });
                     const data = await response.json();
-                    appendTypingEffect(data.response); // Use typing effect for bot responses
+                    appendTypingEffect(data.response);
                 } catch (err) {
                     appendMessage("Error: Could not connect to the backend server.", "bot");
                 }
             };
-
+    
             // SVG click event listener to send message
             sendButton.addEventListener("click", sendMessage);
             chatInput.addEventListener("keypress", (e) => {
                 if (e.key === "Enter") sendMessage();
             });
-
+    
             // Expose addQuestion function to handle the predefined question buttons
             window.addQuestion = addQuestion;
         })();
