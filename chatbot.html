@@ -341,14 +341,41 @@
     </div>
 
     <script>
-        document.getElementById("chat-header-toggle").addEventListener("click", () => {
-            const chatBot = document.getElementById("chatbot");
-            if (chatBot.style.display === "none") {
-                chatBot.style.display = "flex";
+        const chatBot = document.getElementById("chatbot");
+        const chatHeaderToggle = document.getElementById("chat-header-toggle");
+        const chatToggleSVG = document.getElementById("chat-toggle-svg");
+
+        // Toggle chat visibility
+        chatHeaderToggle.addEventListener("click", () => {
+            if (chatBot.style.display === "none" || chatBot.style.display === "") {
+                chatBot.style.display = "flex"; // Show chatbot
+                resetToggleSVG(true);
             } else {
-                chatBot.style.display = "none";
+                chatBot.style.display = "none"; // Hide chatbot
+                resetToggleSVG(false);
             }
         });
+
+        // Reset the toggle SVG to its initial state
+        function resetToggleSVG(isOpen) {
+            if (isOpen) {
+                chatToggleSVG.innerHTML = `
+                    <g id="SVGRepo_iconCarrier">
+                        <path d="M16 8L8 16M8.00001 8L16 16" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </g>`;
+            } else {
+                chatToggleSVG.innerHTML = `
+                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                    <g transform="rotate(-90 12 12)">
+        <path d="M3 5V20.7929C3 21.2383 3.53857 21.4614 3.85355 21.1464L7.70711 17.2929C7.89464 17.1054 8.149 17 8.41421 17H19C20.1046 17 21 16.1046 21 15V5C21 3.89543 20.1046 3 19 3H5C3.89543 3 3 3.89543 3 5Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M15 12C14.2005 12.6224 13.1502 13 12 13C10.8498 13 9.79952 12.6224 9 12" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M9 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M15 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+    </g>
+                `;
+            }
+        }
         (function () {
             const style = document.createElement("style");
             style.innerHTML = `/* styles already provided above */`;
