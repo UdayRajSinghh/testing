@@ -10,51 +10,56 @@
     <style>
         /* Add styles dynamically for the chatbot */
         /* Chatbot container */
-        #chat-toggle {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 60px;
-    height: 60px;
-    background: #da0000;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #fff;
-    font-size: 24px;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 9998; /* Decrease z-index to be lower than chatbox */
-    transition: transform 0.3s ease;
-}
+        #chatbot {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            display: none;
+            flex-direction: column;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            background: #ffffff;
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
 
         @media screen and (max-width: 768px) {
-    #chatbot {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        width: 100vw;
-        height: 100vh;
-        margin: 0;
-        padding: 0;
-        border-radius: 0;
-        max-width: none;
-        z-index: 9999;
-    }
+            #chatbot {
+                width: 99vw;
+                height: 90vh;
+                bottom: 100px;
+                top:5px;
+                right: 0;
+                left: 0;
+                border-radius: 10px;
+                /* Remove rounded corners for fullscreen */
+            }
 
-    #chat-box {
-        height: calc(100vh - 160px); /* Adjust based on header and input heights */
-    }
+            #chat-header {
+                font-size: 20px;
+                /* Adjust header font size for smaller screens */
+            }
 
-    #chat-toggle {
-        bottom: 90px; /* Move toggle button up to avoid overlap */
-        /* OR */
-        display: none; /* Alternative: hide toggle button on mobile if not needed */
-    }
-}
+            #chat-box {
+                padding: 15px;
+                /* Increase padding for better usability */
+            }
+
+            #chat-input-container {
+                padding: 10px;
+                /* Adjust padding for input area */
+            }
+
+            #predefined-questions {
+                padding: 5px;
+                /* Adjust padding for predefined questions */
+            }
+        }
 
 
         /* Keyframes for entry */
