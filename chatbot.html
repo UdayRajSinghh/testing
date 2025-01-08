@@ -10,23 +10,24 @@
     <style>
         /* Add styles dynamically for the chatbot */
         /* Chatbot container */
-        #chatbot {
-            position: fixed;
-            bottom: 100px;
-            right: 20px;
-            width: 350px;
-            height: 500px;
-            display: none;
-            flex-direction: column;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-            background: #ffffff;
-            z-index: 9999;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
-        }
+        #chat-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: #da0000;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 9998; /* Decrease z-index to be lower than chatbox */
+    transition: transform 0.3s ease;
+}
 
         @media screen and (max-width: 768px) {
     #chatbot {
@@ -41,6 +42,7 @@
         padding: 0;
         border-radius: 0;
         max-width: none;
+        z-index: 9999;
     }
 
     #chat-box {
@@ -48,7 +50,9 @@
     }
 
     #chat-toggle {
-        display: none; /* Hide the toggle button on mobile */
+        bottom: 90px; /* Move toggle button up to avoid overlap */
+        /* OR */
+        display: none; /* Alternative: hide toggle button on mobile if not needed */
     }
 }
 
