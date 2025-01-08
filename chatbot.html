@@ -8,20 +8,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chatbot</title>
     <style>
-        html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-}
         /* Chatbot container */
         #chatbot {
-    position: fixed;
-    bottom: 100px;
-    right: 20px;
-    width: 350px;
-    height: 500px;
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
             display: none;
             flex-direction: column;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -36,44 +29,44 @@
 
         /* Mobile styles */
         @media screen and (max-width: 768px) {
-    #chatbot {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        width: 100% !important;
-        height: 100% !important;
-        margin: 0;
-        padding: 0;
-        border-radius: 0;
-        transform: none;
-    }
+            #chatbot {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                width: 100vw;
+                height: 100vh;
+                margin: 0;
+                padding: 0;
+                border-radius: 0;
+                max-width: none;
+            }
 
-    #chat-box {
-        height: calc(100vh - 160px);
-    }
+            #chat-box {
+                height: calc(100vh - 160px);
+            }
 
-    #chat-toggle {
-        display: none;
-    }
+            #chat-header {
+                font-size: 20px;
+            }
 
-    #chat-input-container {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        width: 100%;
-    }
+            #chat-box {
+                padding: 15px;
+            }
 
-    #predefined-questions {
-        position: fixed;
-        bottom: 60px;
-        left: 0;
-        right: 0;
-        width: 100%;
-    }
-}
+            #chat-input-container {
+                padding: 10px;
+            }
+
+            #predefined-questions {
+                padding: 5px;
+            }
+
+            #chat-toggle {
+                display: none;
+            }
+        }
 
         /* Entry animation */
         @keyframes enterChatbot {
