@@ -1,0 +1,517 @@
+<!-- Current Live AI Agent -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        /* Add styles dynamically for the chatbot */
+        /* Chatbot container */
+        #chatbot {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            display: none;
+            flex-direction: column;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            background: #ffffff;
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
+
+        /* Keyframes for entry */
+        @keyframes enterChatbot {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Keyframes for exit */
+        @keyframes exitChatbot {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        }
+
+        /* Apply the entry animation */
+        #chatbot.open {
+            display: flex;
+            /* Make chatbot visible */
+            animation: enterChatbot 0.3s forwards;
+            /* Trigger animation on opening */
+        }
+
+        /* Apply the exit animation */
+        #chatbot.closing {
+            animation: exitChatbot 0.3s forwards;
+            /* Trigger animation on closing */
+            pointer-events: none;
+            /* Disable interaction during closing animation */
+        }
+
+        /* Chat Header */
+        #chat-header {
+            background: #424242;
+            color: #fff;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-family: 'Roboto', sans-serif;
+            /* Apply modern sans-serif font */
+            font-weight: 500;
+            /* Slightly bold */
+            font-size: 25px;
+            /* Adjust font size */
+            cursor: pointer;
+        }
+
+        #logo {
+            width: 50px;
+            /* Adjust the size of the logo */
+            height: auto;
+            margin-right: 10px;
+            /* Space between the logo and the text */
+        }
+
+        /* Chat Box */
+        #chat-box {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding-bottom: 20px;
+            /* Space for input area */
+        }
+
+        /* User message styling */
+        .user-message {
+            background: #ff4545;
+            /* Red background for user */
+            color: #fff;
+            /* White text color */
+            align-self: flex-end;
+            /* Align to the right */
+            padding: 10px;
+            /* Add padding for better readability */
+            margin-top: 5px;
+            /* Add space between messages */
+            margin-right: 10px;
+            /* Add some space from the right */
+            border-radius: 10px 10px 0 10px;
+            /* Rounded corners on the top-right */
+            max-width: 70%;
+            /* Limit the width for readability */
+            word-wrap: break-word;
+            /* Ensure long words break properly */
+        }
+
+        /* Bot message styling */
+        .bot-message {
+            background: #e2e2e2;
+            /* Light grey background for bot */
+            color: #000;
+            /* Black text color */
+            align-self: flex-start;
+            /* Align to the left */
+            padding: 10px;
+            /* Add padding for better readability */
+            margin-top: 5px;
+            /* Add space between messages */
+            margin-left: 10px;
+            /* Add some space from the left */
+            border-radius: 10px 10px 10px 0;
+            /* Rounded corners on the top-left */
+            max-width: 70%;
+            /* Limit the width for readability */
+            word-wrap: break-word;
+            /* Ensure long words break properly */
+        }
+
+        /* Chat Input Container */
+        #chat-input-container {
+            display: flex;
+            padding: 10px;
+            background: #fff;
+            border-top: 1px solid #ccc;
+        }
+
+        /* Chat Input */
+        #chat-input {
+            flex: 1;
+            padding: 6px;
+            /* Reduced padding */
+            font-size: 14px;
+            /* Smaller font size */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        /* Send Button */
+        #send-button {
+            padding: 6px 12px;
+            /* Reduced padding */
+            margin-left: 8px;
+            /* Adjusted margin */
+            background: #da0000;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            width: 24px;
+            /* Smaller width */
+            height: 24px;
+            /* Smaller height */
+        }
+
+        /* Send Button Hover */
+        #send-button:hover {
+            background: #d46d6d;
+        }
+
+        /* Chat Toggle (open/close button) */
+        #chat-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: #da0000;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 9999;
+            transition: transform 0.3s ease;
+            /* Smooth transition for chat button */
+        }
+
+        /* Rotate the button when chat is open */
+        #chat-toggle.rotate {
+            transform: rotate(45deg);
+            /* Rotate the button when chat is open */
+        }
+
+        /* Chat Toggle SVG (icon) */
+        #chat-toggle svg {
+            fill: #fff;
+            width: 30px;
+            height: 30px;
+            transition: transform 0.3s ease;
+            /* Smooth transition for SVG icon */
+        }
+
+        /* Rotate the SVG when chat is open */
+        #chat-toggle svg.rotate {
+            transform: rotate(45deg);
+            /* Rotate the X icon */
+        }
+
+        #google-banner {
+            text-align: center;
+            font-size: 12px;
+            color: #cccccc;
+            margin-top: 5px;
+            background: #424242;
+            padding: 5px;
+            border-top: 1px solid #ccc;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        #predefined-questions {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            background: #f9f9f9;
+            overflow-x: auto;
+            /* Enable horizontal scrolling */
+            overflow-y: hidden;
+            /* Prevent vertical scrolling */
+            white-space: nowrap;
+            /* Prevent wrapping of buttons */
+            -webkit-overflow-scrolling: touch;
+            /* Smooth scrolling on iOS */
+            scrollbar-width: thin;
+            /* Optional: Customize scrollbar appearance */
+        }
+
+
+        .question-button {
+            background-color: #da0000;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .question-button:hover {
+            background-color: #d46d6d;
+        }
+
+        /* Predefined questions fade-out animation */
+        @keyframes fadeOutQuestions {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+
+        #predefined-questions.fade-out {
+            animation: fadeOutQuestions 1s forwards;
+            pointer-events: none;
+            /* Disable interaction during fade-out */
+        }
+
+        /* Add a class to ensure the questions are fully removed after fade-out */
+        #predefined-questions.hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Chatbot HTML -->
+    <div id="chatbot">
+        <div id="chat-header">
+            <img id="logo" src="logo.png" alt="Logo" />
+            ZENCIA
+        </div>
+        <div id="chat-box"></div>
+        <div id="predefined-questions">
+            <button class="question-button" onclick="addQuestion('What is your name?')">What is your name?</button>
+            <button class="question-button" onclick="addQuestion('How can you help me?')">How can you help me?</button>
+            <button class="question-button" onclick="addQuestion('Tell me about Zencia')">Tell me about Zencia</button>
+            <button class="question-button" onclick="addQuestion('What services do you offer?')">What services do you
+                offer?</button>
+        </div>
+        <div id="chat-input-container">
+            <input id="chat-input" type="text" placeholder="Type a message..." />
+            <!-- SVG icon to send message -->
+            <svg id="send-button" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier">
+                    <path
+                        d="M10.3009 13.6949L20.102 3.89742M10.5795 14.1355L12.8019 18.5804C13.339 19.6545 13.6075 20.1916 13.9458 20.3356C14.2394 20.4606 14.575 20.4379 14.8492 20.2747C15.1651 20.0866 15.3591 19.5183 15.7472 18.3818L19.9463 6.08434C20.2845 5.09409 20.4535 4.59896 20.3378 4.27142C20.2371 3.98648 20.013 3.76234 19.7281 3.66167C19.4005 3.54595 18.9054 3.71502 17.9151 4.05315L5.61763 8.2523C4.48114 8.64037 3.91289 8.83441 3.72478 9.15032C3.56153 9.42447 3.53891 9.76007 3.66389 10.0536C3.80791 10.3919 4.34498 10.6605 5.41912 11.1975L9.86397 13.42C10.041 13.5085 10.1295 13.5527 10.2061 13.6118C10.2742 13.6643 10.3352 13.7253 10.3876 13.7933C10.4468 13.87 10.491 13.9585 10.5795 14.1355Z"
+                        stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </g>
+            </svg>
+        </div>
+        <div id="google-banner">Intelligence by Zencia</div>
+    </div>
+
+    <div id="chat-toggle">
+        <!-- Initial Chat Icon (Open Icon) -->
+        <svg id="chat-toggle-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+                <path
+                    d="M3 5V20.7929C3 21.2383 3.53857 21.4614 3.85355 21.1464L7.70711 17.2929C7.89464 17.1054 8.149 17 8.41421 17H19C20.1046 17 21 16.1046 21 15V5C21 3.89543 20.1046 3 19 3H5C3.89543 3 3 3.89543 3 5Z"
+                    stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M15 12C14.2005 12.6224 13.1502 13 12 13C10.8498 13 9.79952 12.6224 9 12" stroke="#000000"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M9 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                </path>
+                <path d="M15 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round"></path>
+            </g>
+        </svg>
+    </div>
+
+    <script>
+        (function () {
+            const style = document.createElement("style");
+            style.innerHTML = `/* styles already provided above */`;
+            document.head.appendChild(style);
+
+            const chatBot = document.getElementById("chatbot");
+            const chatToggle = document.getElementById("chat-toggle");
+            const chatBox = document.getElementById("chat-box");
+            const chatInput = document.getElementById("chat-input");
+            const sendButton = document.getElementById("send-button");
+            const chatToggleSVG = document.getElementById("chat-toggle-svg");
+            const predefinedQuestions = document.getElementById("predefined-questions");
+            const BACKEND_URL = "https://flask-backend-881590070859.us-central1.run.app/";
+
+            // Ensure chat is initially hidden
+            chatBot.style.display = 'none';
+
+            // Flag to track if the first message has been sent
+            let isFirstMessage = true;
+
+            // Function to handle the first message sent and fade out predefined questions
+            const handleFirstMessage = () => {
+                if (isFirstMessage) {
+                    predefinedQuestions.classList.add("fade-out"); // Apply fade-out animation
+
+                    // After the fade-out completes, hide the questions completely
+                    setTimeout(() => {
+                        predefinedQuestions.classList.add("hidden"); // Hide the questions entirely
+                    }, 1000); // Match the duration of the fade-out animation (1s)
+
+                    isFirstMessage = false; // Set flag to false after first message
+                }
+            };
+
+            // Toggle button functionality
+            chatToggle.addEventListener("click", () => {
+                if (chatBot.style.display === "none") {
+                    chatBot.style.display = "flex"; // Show chatbot
+                    chatBot.classList.add("open"); // Apply open animation
+
+                    // Change to close (X) icon
+                    chatToggleSVG.innerHTML = ` 
+                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                    <g id="SVGRepo_iconCarrier">
+                        <path d="M16 8L8 16M8.00001 8L16 16" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </g>
+                `;
+
+                    chatToggle.classList.add("rotate"); // Rotate the button when open
+                    chatToggleSVG.classList.add("rotate"); // Rotate the SVG when open
+                } else {
+                    chatBot.classList.add("closing"); // Apply closing animation
+                    setTimeout(() => {
+                        chatBot.style.display = "none"; // Hide chatbot after animation
+                        chatBot.classList.remove("open", "closing"); // Remove animation classes
+                    }, 300); // Match duration of animation
+                    // Change back to open chat icon
+                    chatToggleSVG.innerHTML = `
+                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                    <g id="SVGRepo_iconCarrier">
+                        <path d="M3 5V20.7929C3 21.2383 3.53857 21.4614 3.85355 21.1464L7.70711 17.2929C7.89464 17.1054 8.149 17 8.41421 17H19C20.1046 17 21 16.1046 21 15V5C21 3.89543 20.1046 3 19 3H5C3.89543 3 3 3.89543 3 5Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M15 12C14.2005 12.6224 13.1502 13 12 13C10.8498 13 9.79952 12.6224 9 12" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M9 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M15 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </g>
+                `;
+                    chatToggle.classList.remove("rotate"); // Remove rotation on close
+                    chatToggleSVG.classList.remove("rotate"); // Remove rotation from SVG on close
+                }
+            });
+
+            const appendMessage = (message, type) => {
+                const messageElement = document.createElement("div");
+                messageElement.className = `${type === "user" ? "user-message" : "bot-message"}`;
+                messageElement.textContent = message;
+                chatBox.appendChild(messageElement);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            };
+
+            const appendTypingEffect = (message, delay = 25) => {
+                const messageElement = document.createElement("div");
+                messageElement.className = "bot-message";
+                chatBox.appendChild(messageElement);
+
+                // Apply formatting to the message
+                const formattedMessage = message
+                    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // Bold for text between '**'
+                    .replace(/\*\s/g, "<br>• "); // Line break and bullet for '* '
+
+                // Display message progressively
+                let index = 0;
+                const interval = setInterval(() => {
+                    messageElement.innerHTML = formattedMessage.slice(0, index);
+                    index++;
+                    chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+                    if (index > formattedMessage.length) {
+                        clearInterval(interval); // Stop typing effect when done
+                    }
+                }, delay);
+            };
+
+
+            const sendMessage = async () => {
+                const userMessage = chatInput.value.trim();
+                if (!userMessage) return;
+
+                appendMessage(userMessage, "user");
+                chatInput.value = "";
+
+                // Trigger fade-out effect for predefined questions after the first message
+                handleFirstMessage();
+
+                try {
+                    const response = await fetch(`${BACKEND_URL}/chat`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ message: userMessage }),
+                    });
+                    const data = await response.json();
+                    appendTypingEffect(data.response); // Use typing effect for bot responses
+                } catch (err) {
+                    appendMessage("Error: Could not connect to the backend server.", "bot");
+                }
+            };
+
+            // Handle predefined question button click
+            const addQuestion = async (question) => {
+                appendMessage(question, "user"); // Append the question as a user message
+                chatInput.value = ""; // Clear the chat input
+
+                // Trigger fade-out effect for predefined questions after the first message
+                handleFirstMessage();
+
+                try {
+                    const response = await fetch(`${BACKEND_URL}/chat`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ message: question }), // Use 'question' instead of 'userMessage'
+                    });
+                    const data = await response.json();
+                    appendTypingEffect(data.response); // Use typing effect for bot responses
+                } catch (err) {
+                    appendMessage("Error: Could not connect to the backend server.", "bot");
+                }
+            };
+
+            // SVG click event listener to send message
+            sendButton.addEventListener("click", sendMessage);
+            chatInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") sendMessage();
+            });
+
+            // Expose addQuestion function to handle the predefined question buttons
+            window.addQuestion = addQuestion;
+        })();
+    </script>
+
+</body>
+
+</html>
