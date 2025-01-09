@@ -74,6 +74,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -86,6 +87,7 @@
                 opacity: 1;
                 transform: translateY(0);
             }
+
             to {
                 opacity: 0;
                 transform: translateY(20px);
@@ -272,6 +274,7 @@
             from {
                 opacity: 1;
             }
+
             to {
                 opacity: 0;
             }
@@ -290,8 +293,10 @@
             display: flex;
             flex-direction: column;
             margin: 5px 0;
-            width: fit-content; /* Change from max-width to fit-content */
-            max-width: 85%;    /* Keep max-width as a constraint */
+            width: fit-content;
+            /* Change from max-width to fit-content */
+            max-width: 85%;
+            /* Keep max-width as a constraint */
         }
 
         .bot-message-container {
@@ -311,9 +316,12 @@
             margin-top: 5px;
             border-radius: 10px 10px 0 10px;
             word-wrap: break-word;
-            width: fit-content; /* Make it fit the content */
-            display: inline-block; /* Allow content to determine width */
-            max-width: 100%;    /* Ensure it doesn't overflow container */
+            width: fit-content;
+            /* Make it fit the content */
+            display: inline-block;
+            /* Allow content to determine width */
+            max-width: 100%;
+            /* Ensure it doesn't overflow container */
         }
 
         .bot-message {
@@ -323,9 +331,12 @@
             margin-top: 5px;
             border-radius: 10px 10px 10px 0;
             word-wrap: break-word;
-            width: fit-content; /* Make it fit the content */
-            display: inline-block; /* Allow content to determine width */
-            max-width: 100%;    /* Ensure it doesn't overflow container */
+            width: fit-content;
+            /* Make it fit the content */
+            display: inline-block;
+            /* Allow content to determine width */
+            max-width: 100%;
+            /* Ensure it doesn't overflow container */
         }
 
         /* Copy button styles */
@@ -359,16 +370,33 @@
 
         /* Copy success animation */
         @keyframes copySuccess {
-            0% { background: #4CAF50; }
-            90% { background: #4CAF50; }
-            100% { background: #424242; }
+            0% {
+                background: #4CAF50;
+            }
+
+            90% {
+                background: #4CAF50;
+            }
+
+            100% {
+                background: #424242;
+            }
         }
 
         .copy-success {
             animation: copySuccess 1.5s forwards;
         }
+
+        #chatbot.closing {
+            animation: exitChatbot 0.3s forwards;
+            pointer-events: none;
+            /* Prevent interaction during fade-out */
+        }
     </style>
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+
 </head>
 
 <body>
@@ -378,7 +406,22 @@
             <img id="logo" src="logo.png" alt="Logo" />
             ZENCIA
             <!-- Toggle button added -->
-            <span id="chat-header-toggle" style="margin-left:auto; cursor:pointer;">-</span>
+            <span id="chat-header-reset" style="margin-left:auto; cursor:pointer; margin-right: 20px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    viewBox="0 0 1920 1920">
+                    <path
+                        d="M960 0v213.333c411.627 0 746.667 334.934 746.667 746.667S1371.627 1706.667 960 1706.667 213.333 1371.733 213.333 960c0-197.013 78.4-382.507 213.334-520.747v254.08H640V106.667H53.333V320h191.04C88.64 494.08 0 720.96 0 960c0 529.28 430.613 960 960 960s960-430.72 960-960S1489.387 0 960 0" />
+                </svg>
+
+            </span>
+
+            <span id="chat-header-toggle" style=" cursor:pointer;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash"
+                    viewBox="0 0 16 16">
+                    <path d="M3 8a1 1 0 0 1 1-1h9a1 1 0 0 1 0 2H4a1 1 0 0 1-1-1z" />
+                </svg>
+            </span>
+
         </div>
         <div id="chat-box"></div>
         <div id="predefined-questions">
@@ -424,12 +467,18 @@
     </div>
 
     <script>
+
+
+
+
+
+
         (function () {
             const style = document.createElement("style");
             const chatHeaderToggle = document.getElementById("chat-header-toggle");
             style.innerHTML = `/* styles already provided above */`;
             document.head.appendChild(style);
-    
+
             const chatBot = document.getElementById("chatbot");
             const chatToggle = document.getElementById("chat-toggle");
             const chatBox = document.getElementById("chat-box");
@@ -439,42 +488,62 @@
             const predefinedQuestions = document.getElementById("predefined-questions");
             const BACKEND_URL = "https://flask-backend-881590070859.us-central1.run.app/";
 
+            const chatReset = document.getElementById("chat-header-reset");
+
+            // Function to clear the chat conversation
+            const resetChat = () => {
+                chatBox.innerHTML = ""; // Clear all messages
+                // Optionally, reset the predefined questions visibility
+                predefinedQuestions.classList.remove("fade-out", "hidden");
+                isFirstMessage = true; // Reset the first message flag
+            };
+
+            // Attach the reset functionality to the reset button
+            chatReset.addEventListener("click", resetChat);
+
+
             chatHeaderToggle.addEventListener("click", () => {
-            if (chatBot.style.display === "none" || chatBot.style.display === "") {
-                chatBot.style.display = "flex"; // Show chatbot
-                resetToggleSVG(true);
-            } else {
-                chatBot.style.display = "none"; // Hide chatbot
-                resetToggleSVG(false);
-            }
-        });
-    
+                if (chatBot.style.display === "none" || chatBot.style.display === "") {
+                    chatBot.style.display = "flex"; // Show chatbot
+                    chatBot.classList.add("open");
+                    resetToggleSVG(true);
+                } else {
+                    chatBot.classList.add("closing"); // Apply closing animation
+                    setTimeout(() => {
+                        chatBot.style.display = "none"; // Hide chatbot after animation
+                        chatBot.classList.remove("open", "closing"); // Remove animation classes
+                    }, 300); // Match the duration of the exit animation
+                    resetToggleSVG(false);
+                }
+            });
+
+
             // Ensure chat is initially hidden
             chatBot.style.display = 'none';
-    
+
             // Flag to track if the first message has been sent
             let isFirstMessage = true;
-    
+
             // Function to handle the first message sent and fade out predefined questions
             const handleFirstMessage = () => {
                 if (isFirstMessage) {
                     predefinedQuestions.classList.add("fade-out"); // Apply fade-out animation
-    
+
                     // After the fade-out completes, hide the questions completely
                     setTimeout(() => {
                         predefinedQuestions.classList.add("hidden"); // Hide the questions entirely
                     }, 1000); // Match the duration of the fade-out animation (1s)
-    
+
                     isFirstMessage = false; // Set flag to false after first message
                 }
             };
-    
+
             // Toggle button functionality
             chatToggle.addEventListener("click", () => {
                 if (chatBot.style.display === "none") {
                     chatBot.style.display = "flex"; // Show chatbot
                     chatBot.classList.add("open"); // Apply open animation
-    
+
                     // Change to close (X) icon
                     chatToggleSVG.innerHTML = ` 
                     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -485,7 +554,7 @@
                         <path d="M9 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                         <path d="M15 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                     </g>`;
-    
+
                     chatToggle.classList.add("rotate"); // Rotate the button when open
                     chatToggleSVG.classList.add("rotate"); // Rotate the SVG when open
                 } else {
@@ -494,7 +563,7 @@
                         chatBot.style.display = "none"; // Hide chatbot after animation
                         chatBot.classList.remove("open", "closing"); // Remove animation classes
                     }, 300); // Match duration of animation
-    
+
                     // Change back to open chat icon
                     chatToggleSVG.innerHTML = `
                     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -509,136 +578,136 @@
                     chatToggleSVG.classList.remove("rotate"); // Remove rotation from SVG on close
                 }
             });
-    
+
             const appendMessage = (message, type) => {
-    const messageContainer = document.createElement("div");
-    messageContainer.className = `message-container ${type}-message-container`;
+                const messageContainer = document.createElement("div");
+                messageContainer.className = `message-container ${type}-message-container`;
 
-    const messageElement = document.createElement("div");
-    messageElement.className = `${type}-message`;
-    
-    // Format the message
-    const formattedMessage = message
-        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-        .replace(/\*\s/g, "<br>• ");
-    
-    messageElement.innerHTML = formattedMessage;
-    messageContainer.appendChild(messageElement);
+                const messageElement = document.createElement("div");
+                messageElement.className = `${type}-message`;
 
-    // Add copy button only for bot messages
-    if (type === "bot") {
-        const copyButton = document.createElement("button");
-        copyButton.className = "copy-button";
-        copyButton.innerHTML = `
+                // Format the message
+                const formattedMessage = message
+                    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+                    .replace(/\*\s/g, "<br>• ");
+
+                messageElement.innerHTML = formattedMessage;
+                messageContainer.appendChild(messageElement);
+
+                // Add copy button only for bot messages
+                if (type === "bot") {
+                    const copyButton = document.createElement("button");
+                    copyButton.className = "copy-button";
+                    copyButton.innerHTML = `
             <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
             </svg>
             Copy
         `;
-        copyButton.addEventListener("click", async () => {
-            try {
-                // Get the formatted text content, preserving line breaks and bullet points
-                const textToCopy = messageElement.innerText;
-                await navigator.clipboard.writeText(textToCopy);
-                copyButton.innerHTML = `
+                    copyButton.addEventListener("click", async () => {
+                        try {
+                            // Get the formatted text content, preserving line breaks and bullet points
+                            const textToCopy = messageElement.innerText;
+                            await navigator.clipboard.writeText(textToCopy);
+                            copyButton.innerHTML = `
                     <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
                     </svg>
                     Copied!
                 `;
-                copyButton.classList.add("copy-success");
-                setTimeout(() => {
-                    copyButton.innerHTML = `
+                            copyButton.classList.add("copy-success");
+                            setTimeout(() => {
+                                copyButton.innerHTML = `
                         <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
                         </svg>
                         Copy
                     `;
-                    copyButton.classList.remove("copy-success");
-                }, 1500);
-            } catch (err) {
-                console.error("Failed to copy message:", err);
-            }
-        });
-        messageContainer.appendChild(copyButton);
-    }
+                                copyButton.classList.remove("copy-success");
+                            }, 1500);
+                        } catch (err) {
+                            console.error("Failed to copy message:", err);
+                        }
+                    });
+                    messageContainer.appendChild(copyButton);
+                }
 
-    chatBox.appendChild(messageContainer);
-    chatBox.scrollTop = chatBox.scrollHeight;
-};
+                chatBox.appendChild(messageContainer);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            };
 
-const appendTypingEffect = (message, delay = 25) => {
-    const messageContainer = document.createElement("div");
-    messageContainer.className = "message-container bot-message-container";
+            const appendTypingEffect = (message, delay = 25) => {
+                const messageContainer = document.createElement("div");
+                messageContainer.className = "message-container bot-message-container";
 
-    const messageElement = document.createElement("div");
-    messageElement.className = "bot-message";
-    messageContainer.appendChild(messageElement);
+                const messageElement = document.createElement("div");
+                messageElement.className = "bot-message";
+                messageContainer.appendChild(messageElement);
 
-    // Add copy button
-    const copyButton = document.createElement("button");
-    copyButton.className = "copy-button";
-    copyButton.innerHTML = `
+                // Add copy button
+                const copyButton = document.createElement("button");
+                copyButton.className = "copy-button";
+                copyButton.innerHTML = `
         <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
         </svg>
         Copy
     `;
-    
-    const formattedMessage = message
-        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-        .replace(/\*\s/g, "<br>• ");
 
-    chatBox.appendChild(messageContainer);
+                const formattedMessage = message
+                    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+                    .replace(/\*\s/g, "<br>• ");
 
-    let index = 0;
-    const interval = setInterval(() => {
-        messageElement.innerHTML = formattedMessage.slice(0, index);
-        index++;
-        chatBox.scrollTop = chatBox.scrollHeight;
-        if (index > formattedMessage.length) {
-            clearInterval(interval);
-            // Add copy button after typing effect is complete
-            copyButton.addEventListener("click", async () => {
-                try {
-                    // Get the formatted text content, preserving line breaks and bullet points
-                    const textToCopy = messageElement.innerText;
-                    await navigator.clipboard.writeText(textToCopy);
-                    copyButton.innerHTML = `
+                chatBox.appendChild(messageContainer);
+
+                let index = 0;
+                const interval = setInterval(() => {
+                    messageElement.innerHTML = formattedMessage.slice(0, index);
+                    index++;
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                    if (index > formattedMessage.length) {
+                        clearInterval(interval);
+                        // Add copy button after typing effect is complete
+                        copyButton.addEventListener("click", async () => {
+                            try {
+                                // Get the formatted text content, preserving line breaks and bullet points
+                                const textToCopy = messageElement.innerText;
+                                await navigator.clipboard.writeText(textToCopy);
+                                copyButton.innerHTML = `
                         <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
                         </svg>
                         Copied!
                     `;
-                    copyButton.classList.add("copy-success");
-                    setTimeout(() => {
-                        copyButton.innerHTML = `
+                                copyButton.classList.add("copy-success");
+                                setTimeout(() => {
+                                    copyButton.innerHTML = `
                             <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
                             </svg>
                             Copy
                         `;
-                        copyButton.classList.remove("copy-success");
-                    }, 1500);
-                } catch (err) {
-                    console.error("Failed to copy message:", err);
-                }
-            });
-            messageContainer.appendChild(copyButton);
-        }
-    }, delay);
-};
-    
+                                    copyButton.classList.remove("copy-success");
+                                }, 1500);
+                            } catch (err) {
+                                console.error("Failed to copy message:", err);
+                            }
+                        });
+                        messageContainer.appendChild(copyButton);
+                    }
+                }, delay);
+            };
+
             const sendMessage = async () => {
                 const userMessage = chatInput.value.trim();
                 if (!userMessage) return;
-    
+
                 appendMessage(userMessage, "user");
                 chatInput.value = "";
-    
+
                 // Trigger fade-out effect for predefined questions after the first message
                 handleFirstMessage();
-    
+
                 try {
                     const response = await fetch(`${BACKEND_URL}/chat`, {
                         method: "POST",
@@ -651,15 +720,15 @@ const appendTypingEffect = (message, delay = 25) => {
                     appendMessage("Error: Could not connect to the backend server.", "bot");
                 }
             };
-    
+
             // Handle predefined question button click
             const addQuestion = async (question) => {
                 appendMessage(question, "user");
                 chatInput.value = "";
-    
+
                 // Trigger fade-out effect for predefined questions after the first message
                 handleFirstMessage();
-    
+
                 try {
                     const response = await fetch(`${BACKEND_URL}/chat`, {
                         method: "POST",
@@ -672,13 +741,13 @@ const appendTypingEffect = (message, delay = 25) => {
                     appendMessage("Error: Could not connect to the backend server.", "bot");
                 }
             };
-    
+
             // SVG click event listener to send message
             sendButton.addEventListener("click", sendMessage);
             chatInput.addEventListener("keypress", (e) => {
                 if (e.key === "Enter") sendMessage();
             });
-    
+
             // Expose addQuestion function to handle the predefined question buttons
             window.addQuestion = addQuestion;
         })();
