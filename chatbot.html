@@ -289,6 +289,7 @@
     border-radius: 50%;
     margin: 0 2px;
     opacity: 0.4;
+    
 }
 
 .typing-indicator span:nth-child(1) {
@@ -364,7 +365,6 @@
     </div>
 
     <script>
-
         (function () {
             const chatBot = document.getElementById("chatbot");
             const chatBox = document.getElementById("chat-box");
@@ -373,40 +373,47 @@
             const predefinedQuestions = document.getElementById("predefined-questions");
             const chatReset = document.getElementById("chat-header-reset");
             const BACKEND_URL = "https://flask-backend-881590070859.us-central1.run.app/";
-
+        
             // Flag to track if the first message has been sent
             let isFirstMessage = true;
-
+        
+            // Add initial greeting when the chat loads
+            window.addEventListener('load', () => {
+                appendTypingEffect("Hey there! How can i assist you today?");
+            });
+        
             const showTypingIndicator = () => {
                 hideTypingIndicator();
                 const indicatorContainer = document.createElement('div');
                 indicatorContainer.className = 'typing-indicator-container message-container bot-message-container';
                 indicatorContainer.innerHTML = `
-            <div class="typing-indicator">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        `;
+                    <div class="typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                `;
                 chatBox.appendChild(indicatorContainer);
                 chatBox.scrollTop = chatBox.scrollHeight;
             };
-
+        
             const hideTypingIndicator = () => {
                 const existingIndicator = document.querySelector('.typing-indicator-container');
                 if (existingIndicator) {
                     existingIndicator.remove();
                 }
             };
-
+        
             const resetChat = () => {
                 chatBox.innerHTML = "";
                 predefinedQuestions.classList.remove("fade-out", "hidden");
                 isFirstMessage = true;
+                // Re-add the greeting message after reset
+                appendTypingEffect("Hey there! How can i assist you today?");
             };
-
+        
             chatReset.addEventListener("click", resetChat);
-
+        
             const handleFirstMessage = () => {
                 if (isFirstMessage) {
                     predefinedQuestions.classList.add("fade-out");
@@ -416,50 +423,50 @@
                     isFirstMessage = false;
                 }
             };
-
+        
             const appendMessage = (message, type) => {
                 const messageContainer = document.createElement("div");
                 messageContainer.className = `message-container ${type}-message-container`;
-
+        
                 const messageElement = document.createElement("div");
                 messageElement.className = `${type}-message`;
-
+        
                 // Format the message
                 const formattedMessage = message
                     .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
                     .replace(/\*\s/g, "<br>• ");
-
+        
                 messageElement.innerHTML = formattedMessage;
                 messageContainer.appendChild(messageElement);
-
+        
                 // Add copy button only for bot messages
                 if (type === "bot") {
                     const copyButton = document.createElement("button");
                     copyButton.className = "copy-button";
                     copyButton.innerHTML = `
-                <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-                </svg>
-                Copy
-            `;
+                        <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                        </svg>
+                        Copy
+                    `;
                     copyButton.addEventListener("click", async () => {
                         try {
                             const textToCopy = messageElement.innerText;
                             await navigator.clipboard.writeText(textToCopy);
                             copyButton.innerHTML = `
-                        <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
-                        </svg>
-                        Copied!
-                    `;
+                                <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+                                </svg>
+                                Copied!
+                            `;
                             copyButton.classList.add("copy-success");
                             setTimeout(() => {
                                 copyButton.innerHTML = `
-                            <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-                            </svg>
-                            Copy
-                        `;
+                                    <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                    </svg>
+                                    Copy
+                                `;
                                 copyButton.classList.remove("copy-success");
                             }, 1500);
                         } catch (err) {
@@ -468,34 +475,34 @@
                     });
                     messageContainer.appendChild(copyButton);
                 }
-
+        
                 chatBox.appendChild(messageContainer);
                 chatBox.scrollTop = chatBox.scrollHeight;
             };
-
+        
             const appendTypingEffect = (message, delay = 25) => {
                 const messageContainer = document.createElement("div");
                 messageContainer.className = "message-container bot-message-container";
-
+        
                 const messageElement = document.createElement("div");
                 messageElement.className = "bot-message";
                 messageContainer.appendChild(messageElement);
-
+        
                 const copyButton = document.createElement("button");
                 copyButton.className = "copy-button";
                 copyButton.innerHTML = `
-            <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-            </svg>
-            Copy
-        `;
-
+                    <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                    Copy
+                `;
+        
                 const formattedMessage = message
                     .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
                     .replace(/\*\s/g, "<br>• ");
-
+        
                 chatBox.appendChild(messageContainer);
-
+        
                 // Keep track of user's manual scrolling
                 let userHasScrolled = false;
                 chatBox.addEventListener('wheel', () => {
@@ -504,17 +511,17 @@
                 chatBox.addEventListener('touchmove', () => {
                     userHasScrolled = true;
                 });
-
+        
                 let index = 0;
                 const interval = setInterval(() => {
                     messageElement.innerHTML = formattedMessage.slice(0, index);
                     index++;
-
+        
                     // Only scroll to bottom if user hasn't manually scrolled
                     if (!userHasScrolled) {
                         chatBox.scrollTop = chatBox.scrollHeight;
                     }
-
+        
                     if (index > formattedMessage.length) {
                         clearInterval(interval);
                         // Add copy button after typing effect is complete
@@ -523,19 +530,19 @@
                                 const textToCopy = messageElement.innerText;
                                 await navigator.clipboard.writeText(textToCopy);
                                 copyButton.innerHTML = `
-                            <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
-                            </svg>
-                            Copied!
-                        `;
+                                    <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+                                    </svg>
+                                    Copied!
+                                `;
                                 copyButton.classList.add("copy-success");
                                 setTimeout(() => {
                                     copyButton.innerHTML = `
-                                <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-                                </svg>
-                                Copy
-                            `;
+                                        <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                        </svg>
+                                        Copy
+                                    `;
                                     copyButton.classList.remove("copy-success");
                                 }, 1500);
                             } catch (err) {
@@ -546,17 +553,17 @@
                     }
                 }, delay);
             };
-
+        
             const sendMessage = async () => {
                 const userMessage = chatInput.value.trim();
                 if (!userMessage) return;
-
+        
                 appendMessage(userMessage, "user");
                 chatInput.value = "";
                 handleFirstMessage();
-
+        
                 showTypingIndicator();
-
+        
                 try {
                     const response = await fetch(`${BACKEND_URL}/chat`, {
                         method: "POST",
@@ -564,7 +571,7 @@
                         body: JSON.stringify({ message: userMessage }),
                     });
                     const data = await response.json();
-
+        
                     hideTypingIndicator();
                     appendTypingEffect(data.response);
                 } catch (err) {
@@ -572,14 +579,14 @@
                     appendMessage("Error: Could not connect to the backend server.", "bot");
                 }
             };
-
+        
             const addQuestion = async (question) => {
                 appendMessage(question, "user");
                 chatInput.value = "";
                 handleFirstMessage();
-
+        
                 showTypingIndicator();
-
+        
                 try {
                     const response = await fetch(`${BACKEND_URL}/chat`, {
                         method: "POST",
@@ -587,7 +594,7 @@
                         body: JSON.stringify({ message: question }),
                     });
                     const data = await response.json();
-
+        
                     hideTypingIndicator();
                     appendTypingEffect(data.response);
                 } catch (err) {
@@ -595,17 +602,17 @@
                     appendMessage("Error: Could not connect to the backend server.", "bot");
                 }
             };
-
+        
             // Event listeners
             sendButton.addEventListener("click", sendMessage);
             chatInput.addEventListener("keypress", (e) => {
                 if (e.key === "Enter") sendMessage();
             });
-
+        
             // Expose addQuestion function to handle the predefined question buttons
             window.addQuestion = addQuestion;
         })();
-    </script>
+        </script>
 
 </body>
 
