@@ -9,435 +9,310 @@
     <title>Chatbot</title>
     <style>
         /* Chatbot container */
-        #chatbot {
-            position: fixed;
-            bottom: 100px;
-            right: 20px;
-            width: 350px;
-            height: 500px;
-            display: none;
-            flex-direction: column;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-            background: #ffffff;
-            z-index: 9999;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
-        }
+#chatbot {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 350px;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    background: #ffffff;
+    z-index: 9999;
+}
 
-        /* Mobile styles */
-        @media screen and (max-width: 768px) {
-            #chatbot {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                width: 100vw;
-                height: 100vh;
-                margin: 0;
-                padding: 0;
-                border-radius: 0;
-                max-width: none;
-            }
+/* Mobile styles */
+@media screen and (max-width: 768px) {
+    #chatbot {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        border-radius: 0;
+        max-width: none;
+    }
 
-            #chat-box {
-                height: calc(100vh - 160px);
-            }
+    #chat-box {
+        height: calc(100vh - 160px);
+    }
 
-            #chat-header {
-                font-size: 20px;
-            }
+    #chat-header {
+        font-size: 20px;
+    }
 
-            #chat-box {
-                padding: 15px;
-            }
+    #chat-box {
+        padding: 15px;
+    }
 
-            #chat-input-container {
-                padding: 10px;
-            }
+    #chat-input-container {
+        padding: 10px;
+    }
 
-            #predefined-questions {
-                padding: 5px;
-            }
+    #predefined-questions {
+        padding: 5px;
+    }
+}
 
-            #chat-toggle {
-                display: none;
-            }
-        }
+/* Chat Header */
+#chat-header {
+    background: #424242;
+    color: #fff;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: 25px;
+    cursor: pointer;
+}
 
-        /* Entry animation */
-        @keyframes enterChatbot {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
+#logo {
+    width: 50px;
+    height: auto;
+    margin-right: 10px;
+}
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+/* Chat Box */
+#chat-box {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    background: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-bottom: 20px;
+}
 
-        /* Exit animation */
-        @keyframes exitChatbot {
-            from {
-                opacity: 1;
-                transform: translateY(0);
-            }
+/* Message styling */
+.message-container {
+    display: flex;
+    flex-direction: column;
+    margin: 5px 0;
+    width: fit-content;
+    max-width: 85%;
+}
 
-            to {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-        }
+.bot-message-container {
+    align-self: flex-start;
+    margin-left: 10px;
+}
 
-        /* Open state */
-        #chatbot.open {
-            display: flex;
-            animation: enterChatbot 0.3s forwards;
-        }
+.user-message-container {
+    align-self: flex-end;
+    margin-right: 10px;
+}
 
-        /* Closing state */
-        #chatbot.closing {
-            animation: exitChatbot 0.3s forwards;
-            pointer-events: none;
-        }
+.user-message {
+    background: #ff4545;
+    color: #fff;
+    padding: 12px 16px;
+    margin-top: 5px;
+    border-radius: 10px 10px 0 10px;
+    word-wrap: break-word;
+    width: fit-content;
+    display: inline-block;
+    max-width: 100%;
+}
 
-        /* Chat Header */
-        #chat-header {
-            background: #424242;
-            color: #fff;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            font-family: 'Roboto', sans-serif;
-            font-weight: 500;
-            font-size: 25px;
-            cursor: pointer;
-        }
+.bot-message {
+    background: #e2e2e2;
+    color: #000;
+    padding: 12px 16px;
+    margin-top: 5px;
+    border-radius: 10px 10px 10px 0;
+    word-wrap: break-word;
+    width: fit-content;
+    display: inline-block;
+    max-width: 100%;
+}
 
-        #logo {
-            width: 50px;
-            height: auto;
-            margin-right: 10px;
-        }
+/* Input area */
+#chat-input-container {
+    display: flex;
+    padding: 10px;
+    background: #fff;
+    border-top: 1px solid #ccc;
+}
 
-        /* Chat Box */
-        #chat-box {
-            flex: 1;
-            padding: 10px;
-            overflow-y: auto;
-            background: #f9f9f9;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            padding-bottom: 20px;
-        }
+#chat-input {
+    flex: 1;
+    padding: 6px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
 
-        /* Message styling */
-        .user-message {
-            background: #ff4545;
-            color: #fff;
-            align-self: flex-end;
-            padding: 10px;
-            margin-top: 5px;
-            /* margin-right: 10px; */
-            border-radius: 10px 10px 0 10px;
-            max-width: 70%;
-            word-wrap: break-word;
-        }
+#send-button {
+    padding: 6px 12px;
+    margin-left: 8px;
+    background: #da0000;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+}
 
-        .bot-message {
-            background: #e2e2e2;
-            color: #000;
-            align-self: flex-start;
-            padding: 10px;
-            margin-top: 5px;
-            margin-left: 0px;
-            border-radius: 10px 10px 10px 0;
-            max-width: 70%;
-            word-wrap: break-word;
-        }
+#send-button:hover {
+    background: #d46d6d;
+}
 
-        /* Input area */
-        #chat-input-container {
-            display: flex;
-            padding: 10px;
-            background: #fff;
-            border-top: 1px solid #ccc;
-        }
+/* Banner */
+#google-banner {
+    text-align: center;
+    font-size: 12px;
+    color: #cccccc;
+    margin-top: 5px;
+    background: #424242;
+    padding: 5px;
+    border-top: 1px solid #ccc;
+    font-family: 'Roboto', sans-serif;
+}
 
-        #chat-input {
-            flex: 1;
-            padding: 6px;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
+/* Predefined questions */
+#predefined-questions {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    background: #f9f9f9;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
 
-        #send-button {
-            padding: 6px 12px;
-            margin-left: 8px;
-            background: #da0000;
-            border: none;
-            border-radius: 5px;
-            color: #fff;
-            cursor: pointer;
-            width: 24px;
-            height: 24px;
-        }
+.question-button {
+    background-color: #da0000;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
 
-        #send-button:hover {
-            background: #d46d6d;
-        }
+.question-button:hover {
+    background-color: #d46d6d;
+}
 
-        /* Chat toggle button */
-        #chat-toggle {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            background: #da0000;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 9998;
-            transition: transform 0.3s ease;
-        }
+/* Questions fade-out animation */
+@keyframes fadeOutQuestions {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
 
-        #chat-toggle.rotate {
-            transform: rotate(45deg);
-        }
+#predefined-questions.fade-out {
+    animation: fadeOutQuestions 1s forwards;
+    pointer-events: none;
+}
 
-        #chat-toggle svg {
-            fill: #fff;
-            width: 30px;
-            height: 30px;
-            transition: transform 0.3s ease;
-        }
+#predefined-questions.hidden {
+    display: none;
+}
 
-        #chat-toggle svg.rotate {
-            transform: rotate(45deg);
-        }
+/* Copy button styles */
+.copy-button {
+    background: #868686;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-top: 4px;
+    opacity: 0.8;
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
 
-        /* Banner */
-        #google-banner {
-            text-align: center;
-            font-size: 12px;
-            color: #cccccc;
-            margin-top: 5px;
-            background: #424242;
-            padding: 5px;
-            border-top: 1px solid #ccc;
-            font-family: 'Roboto', sans-serif;
-        }
+.copy-button:hover {
+    opacity: 1;
+    background: #616161;
+}
 
-        /* Predefined questions */
-        #predefined-questions {
-            display: flex;
-            gap: 10px;
-            padding: 10px;
-            background: #f9f9f9;
-            overflow-x: auto;
-            overflow-y: hidden;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: thin;
-        }
+.copy-icon {
+    width: 12px;
+    height: 12px;
+    fill: currentColor;
+}
 
-        .question-button {
-            background-color: #da0000;
-            color: white;
-            padding: 6px 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-        }
+/* Copy success animation */
+@keyframes copySuccess {
+    0% {
+        background: #4CAF50;
+    }
+    90% {
+        background: #4CAF50;
+    }
+    100% {
+        background: #424242;
+    }
+}
 
-        .question-button:hover {
-            background-color: #d46d6d;
-        }
+.copy-success {
+    animation: copySuccess 1.5s forwards;
+}
 
-        /* Questions fade-out animation */
-        @keyframes fadeOutQuestions {
-            from {
-                opacity: 1;
-            }
+/* Typing indicator */
+.typing-indicator {
+    display: inline-flex;
+    align-items: center;
+    padding: 12px 16px;
+    background: #e2e2e2;
+    border-radius: 10px 10px 10px 0;
+    margin: 5px 0;
+    width: fit-content;
+}
 
-            to {
-                opacity: 0;
-            }
-        }
+.typing-indicator span {
+    width: 8px;
+    height: 8px;
+    background: #666;
+    border-radius: 50%;
+    margin: 0 2px;
+    opacity: 0.4;
+}
 
-        #predefined-questions.fade-out {
-            animation: fadeOutQuestions 1s forwards;
-            pointer-events: none;
-        }
+.typing-indicator span:nth-child(1) {
+    animation: wave 1.3s linear infinite;
+}
 
-        #predefined-questions.hidden {
-            display: none;
-        }
+.typing-indicator span:nth-child(2) {
+    animation: wave 1.3s linear infinite 0.2s;
+}
 
-        .message-container {
-            display: flex;
-            flex-direction: column;
-            margin: 5px 0;
-            width: fit-content;
-            /* Change from max-width to fit-content */
-            max-width: 85%;
-            /* Keep max-width as a constraint */
-        }
+.typing-indicator span:nth-child(3) {
+    animation: wave 1.3s linear infinite 0.4s;
+}
 
-        .bot-message-container {
-            align-self: flex-start;
-            margin-left: 10px;
-        }
-
-        .user-message-container {
-            align-self: flex-end;
-            margin-right: 10px;
-        }
-
-        .user-message {
-            background: #ff4545;
-            color: #fff;
-            padding: 12px 16px;
-            margin-top: 5px;
-            border-radius: 10px 10px 0 10px;
-            word-wrap: break-word;
-            width: fit-content;
-            /* Make it fit the content */
-            display: inline-block;
-            /* Allow content to determine width */
-            max-width: 100%;
-            /* Ensure it doesn't overflow container */
-        }
-
-        .bot-message {
-            background: #e2e2e2;
-            color: #000;
-            padding: 12px 16px;
-            margin-top: 5px;
-            border-radius: 10px 10px 10px 0;
-            word-wrap: break-word;
-            width: fit-content;
-            /* Make it fit the content */
-            display: inline-block;
-            /* Allow content to determine width */
-            max-width: 100%;
-            /* Ensure it doesn't overflow container */
-        }
-
-        /* Copy button styles */
-        .copy-button {
-            background: #868686;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 4px 8px;
-            font-size: 12px;
-            cursor: pointer;
-            margin-top: 4px;
-            opacity: 0.8;
-            align-self: flex-start;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-
-        .copy-button:hover {
-            opacity: 1;
-            background: #616161;
-        }
-
-        .copy-icon {
-            width: 12px;
-            height: 12px;
-            fill: currentColor;
-        }
-
-        /* Copy success animation */
-        @keyframes copySuccess {
-            0% {
-                background: #4CAF50;
-            }
-
-            90% {
-                background: #4CAF50;
-            }
-
-            100% {
-                background: #424242;
-            }
-        }
-
-        .copy-success {
-            animation: copySuccess 1.5s forwards;
-        }
-
-        #chatbot.closing {
-            animation: exitChatbot 0.3s forwards;
-            pointer-events: none;
-            /* Prevent interaction during fade-out */
-        }
-
-        .typing-indicator {
-            display: inline-flex;
-            align-items: center;
-            padding: 12px 16px;
-            background: #e2e2e2;
-            border-radius: 10px 10px 10px 0;
-            margin: 5px 0;
-            width: fit-content;
-        }
-
-        .typing-indicator span {
-            width: 8px;
-            height: 8px;
-            background: #666;
-            border-radius: 50%;
-            margin: 0 2px;
-            opacity: 0.4;
-        }
-
-        .typing-indicator span:nth-child(1) {
-            animation: wave 1.3s linear infinite;
-        }
-
-        .typing-indicator span:nth-child(2) {
-            animation: wave 1.3s linear infinite 0.2s;
-        }
-
-        .typing-indicator span:nth-child(3) {
-            animation: wave 1.3s linear infinite 0.4s;
-        }
-
-        @keyframes wave {
-
-            0%,
-            60%,
-            100% {
-                transform: translateY(0);
-                opacity: 0.4;
-            }
-
-            30% {
-                transform: translateY(-4px);
-                opacity: 1;
-            }
-        }
+@keyframes wave {
+    0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.4;
+    }
+    30% {
+        transform: translateY(-4px);
+        opacity: 1;
+    }
+}
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -446,28 +321,17 @@
 </head>
 
 <body>
-    <!-- Chatbot HTML -->
     <div id="chatbot">
         <div id="chat-header">
             <img id="logo" src="logo.png" alt="Logo" />
             ZENCIA
-            <!-- Toggle button added -->
             <span id="chat-header-reset" style="margin-left:auto; cursor:pointer; margin-right: 20px;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                     viewBox="0 0 1920 1920">
                     <path
                         d="M960 0v213.333c411.627 0 746.667 334.934 746.667 746.667S1371.627 1706.667 960 1706.667 213.333 1371.733 213.333 960c0-197.013 78.4-382.507 213.334-520.747v254.08H640V106.667H53.333V320h191.04C88.64 494.08 0 720.96 0 960c0 529.28 430.613 960 960 960s960-430.72 960-960S1489.387 0 960 0" />
                 </svg>
-
             </span>
-
-            <span id="chat-header-toggle" style=" cursor:pointer;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash"
-                    viewBox="0 0 16 16">
-                    <path d="M3 8a1 1 0 0 1 1-1h9a1 1 0 0 1 0 2H4a1 1 0 0 1-1-1z" />
-                </svg>
-            </span>
-
         </div>
         <div id="chat-box"></div>
         <div class="typing-indicator-container message-container bot-message-container" style="display: none;">
@@ -486,7 +350,6 @@
         </div>
         <div id="chat-input-container">
             <input id="chat-input" type="text" placeholder="Type a message..." />
-            <!-- SVG icon to send message -->
             <svg id="send-button" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -500,66 +363,31 @@
         <div id="google-banner">Intelligence by Zencia</div>
     </div>
 
-    <div id="chat-toggle">
-        <!-- Initial Chat Icon (Open Icon) -->
-        <svg id="chat-toggle-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-            <g id="SVGRepo_iconCarrier">
-                <path
-                    d="M3 5V20.7929C3 21.2383 3.53857 21.4614 3.85355 21.1464L7.70711 17.2929C7.89464 17.1054 8.149 17 8.41421 17H19C20.1046 17 21 16.1046 21 15V5C21 3.89543 20.1046 3 19 3H5C3.89543 3 3 3.89543 3 5Z"
-                    stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                <path d="M15 12C14.2005 12.6224 13.1502 13 12 13C10.8498 13 9.79952 12.6224 9 12" stroke="#000000"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                <path d="M9 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                </path>
-                <path d="M15 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-            </g>
-        </svg>
-    </div>
-
     <script>
 
-
-
-
-
-
         (function () {
-            const style = document.createElement("style");
-            const chatHeaderToggle = document.getElementById("chat-header-toggle");
-            style.innerHTML = `/* styles already provided above */`;
-            document.head.appendChild(style);
-
             const chatBot = document.getElementById("chatbot");
-            const chatToggle = document.getElementById("chat-toggle");
             const chatBox = document.getElementById("chat-box");
             const chatInput = document.getElementById("chat-input");
             const sendButton = document.getElementById("send-button");
-            const chatToggleSVG = document.getElementById("chat-toggle-svg");
             const predefinedQuestions = document.getElementById("predefined-questions");
+            const chatReset = document.getElementById("chat-header-reset");
             const BACKEND_URL = "https://flask-backend-881590070859.us-central1.run.app/";
 
-            const chatReset = document.getElementById("chat-header-reset");
+            // Flag to track if the first message has been sent
+            let isFirstMessage = true;
 
             const showTypingIndicator = () => {
-                // Remove any existing typing indicator first
                 hideTypingIndicator();
-
-                // Create new typing indicator
                 const indicatorContainer = document.createElement('div');
                 indicatorContainer.className = 'typing-indicator-container message-container bot-message-container';
-
                 indicatorContainer.innerHTML = `
-        <div class="typing-indicator">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-    `;
-
-                // Append it to chat box
+            <div class="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        `;
                 chatBox.appendChild(indicatorContainer);
                 chatBox.scrollTop = chatBox.scrollHeight;
             };
@@ -571,95 +399,23 @@
                 }
             };
 
-
-            // Function to clear the chat conversation
             const resetChat = () => {
-                chatBox.innerHTML = ""; // Clear all messages
-                // Optionally, reset the predefined questions visibility
+                chatBox.innerHTML = "";
                 predefinedQuestions.classList.remove("fade-out", "hidden");
-                isFirstMessage = true; // Reset the first message flag
+                isFirstMessage = true;
             };
 
-            // Attach the reset functionality to the reset button
             chatReset.addEventListener("click", resetChat);
 
-
-            chatHeaderToggle.addEventListener("click", () => {
-                if (chatBot.style.display === "none" || chatBot.style.display === "") {
-                    chatBot.style.display = "flex"; // Show chatbot
-                    chatBot.classList.add("open");
-                    resetToggleSVG(true);
-                } else {
-                    chatBot.classList.add("closing"); // Apply closing animation
-                    setTimeout(() => {
-                        chatBot.style.display = "none"; // Hide chatbot after animation
-                        chatBot.classList.remove("open", "closing"); // Remove animation classes
-                    }, 300); // Match the duration of the exit animation
-                    resetToggleSVG(false);
-                }
-            });
-
-
-            // Ensure chat is initially hidden
-            chatBot.style.display = 'none';
-
-            // Flag to track if the first message has been sent
-            let isFirstMessage = true;
-
-            // Function to handle the first message sent and fade out predefined questions
             const handleFirstMessage = () => {
                 if (isFirstMessage) {
-                    predefinedQuestions.classList.add("fade-out"); // Apply fade-out animation
-
-                    // After the fade-out completes, hide the questions completely
+                    predefinedQuestions.classList.add("fade-out");
                     setTimeout(() => {
-                        predefinedQuestions.classList.add("hidden"); // Hide the questions entirely
-                    }, 1000); // Match the duration of the fade-out animation (1s)
-
-                    isFirstMessage = false; // Set flag to false after first message
+                        predefinedQuestions.classList.add("hidden");
+                    }, 1000);
+                    isFirstMessage = false;
                 }
             };
-
-            // Toggle button functionality
-            chatToggle.addEventListener("click", () => {
-                if (chatBot.style.display === "none") {
-                    chatBot.style.display = "flex"; // Show chatbot
-                    chatBot.classList.add("open"); // Apply open animation
-
-                    // Change to close (X) icon
-                    chatToggleSVG.innerHTML = ` 
-                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                    <g transform="rotate(-90 12 12)">
-                        <path d="M3 5V20.7929C3 21.2383 3.53857 21.4614 3.85355 21.1464L7.70711 17.2929C7.89464 17.1054 8.149 17 8.41421 17H19C20.1046 17 21 16.1046 21 15V5C21 3.89543 20.1046 3 19 3H5C3.89543 3 3 3.89543 3 5Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                        <path d="M15 12C14.2005 12.6224 13.1502 13 12 13C10.8498 13 9.79952 12.6224 9 12" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                        <path d="M9 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                        <path d="M15 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                    </g>`;
-
-                    chatToggle.classList.add("rotate"); // Rotate the button when open
-                    chatToggleSVG.classList.add("rotate"); // Rotate the SVG when open
-                } else {
-                    chatBot.classList.add("closing"); // Apply closing animation
-                    setTimeout(() => {
-                        chatBot.style.display = "none"; // Hide chatbot after animation
-                        chatBot.classList.remove("open", "closing"); // Remove animation classes
-                    }, 300); // Match duration of animation
-
-                    // Change back to open chat icon
-                    chatToggleSVG.innerHTML = `
-                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                    <g id="SVGRepo_iconCarrier">
-                        <path d="M3 5V20.7929C3 21.2383 3.53857 21.4614 3.85355 21.1464L7.70711 17.2929C7.89464 17.1054 8.149 17 8.41421 17H19C20.1046 17 21 16.1046 21 15V5C21 3.89543 20.1046 3 19 3H5C3.89543 3 3 3.89543 3 5Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                        <path d="M15 12C14.2005 12.6224 13.1502 13 12 13C10.8498 13 9.79952 12.6224 9 12" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                        <path d="M9 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                        <path d="M15 8.01953V8" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                    </g>`;
-                    chatToggle.classList.remove("rotate"); // Remove rotation on close
-                    chatToggleSVG.classList.remove("rotate"); // Remove rotation from SVG on close
-                }
-            });
 
             const appendMessage = (message, type) => {
                 const messageContainer = document.createElement("div");
@@ -681,30 +437,29 @@
                     const copyButton = document.createElement("button");
                     copyButton.className = "copy-button";
                     copyButton.innerHTML = `
-            <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-            </svg>
-            Copy
-        `;
+                <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                </svg>
+                Copy
+            `;
                     copyButton.addEventListener("click", async () => {
                         try {
-                            // Get the formatted text content, preserving line breaks and bullet points
                             const textToCopy = messageElement.innerText;
                             await navigator.clipboard.writeText(textToCopy);
                             copyButton.innerHTML = `
-                    <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
-                    </svg>
-                    Copied!
-                `;
+                        <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+                        </svg>
+                        Copied!
+                    `;
                             copyButton.classList.add("copy-success");
                             setTimeout(() => {
                                 copyButton.innerHTML = `
-                        <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-                        </svg>
-                        Copy
-                    `;
+                            <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                            </svg>
+                            Copy
+                        `;
                                 copyButton.classList.remove("copy-success");
                             }, 1500);
                         } catch (err) {
@@ -719,78 +474,78 @@
             };
 
             const appendTypingEffect = (message, delay = 25) => {
-    const messageContainer = document.createElement("div");
-    messageContainer.className = "message-container bot-message-container";
+                const messageContainer = document.createElement("div");
+                messageContainer.className = "message-container bot-message-container";
 
-    const messageElement = document.createElement("div");
-    messageElement.className = "bot-message";
-    messageContainer.appendChild(messageElement);
+                const messageElement = document.createElement("div");
+                messageElement.className = "bot-message";
+                messageContainer.appendChild(messageElement);
 
-    const copyButton = document.createElement("button");
-    copyButton.className = "copy-button";
-    copyButton.innerHTML = `
-        <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-        </svg>
-        Copy
-    `;
+                const copyButton = document.createElement("button");
+                copyButton.className = "copy-button";
+                copyButton.innerHTML = `
+            <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+            </svg>
+            Copy
+        `;
 
-    const formattedMessage = message
-        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-        .replace(/\*\s/g, "<br>• ");
+                const formattedMessage = message
+                    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+                    .replace(/\*\s/g, "<br>• ");
 
-    chatBox.appendChild(messageContainer);
+                chatBox.appendChild(messageContainer);
 
-    // Keep track of user's manual scrolling
-    let userHasScrolled = false;
-    chatBox.addEventListener('wheel', () => {
-        userHasScrolled = true;
-    });
-    chatBox.addEventListener('touchmove', () => {
-        userHasScrolled = true;
-    });
+                // Keep track of user's manual scrolling
+                let userHasScrolled = false;
+                chatBox.addEventListener('wheel', () => {
+                    userHasScrolled = true;
+                });
+                chatBox.addEventListener('touchmove', () => {
+                    userHasScrolled = true;
+                });
 
-    let index = 0;
-    const interval = setInterval(() => {
-        messageElement.innerHTML = formattedMessage.slice(0, index);
-        index++;
-        
-        // Only scroll to bottom if user hasn't manually scrolled
-        if (!userHasScrolled) {
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-        
-        if (index > formattedMessage.length) {
-            clearInterval(interval);
-            // Add copy button after typing effect is complete
-            copyButton.addEventListener("click", async () => {
-                try {
-                    const textToCopy = messageElement.innerText;
-                    await navigator.clipboard.writeText(textToCopy);
-                    copyButton.innerHTML = `
-                        <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
-                        </svg>
-                        Copied!
-                    `;
-                    copyButton.classList.add("copy-success");
-                    setTimeout(() => {
-                        copyButton.innerHTML = `
+                let index = 0;
+                const interval = setInterval(() => {
+                    messageElement.innerHTML = formattedMessage.slice(0, index);
+                    index++;
+
+                    // Only scroll to bottom if user hasn't manually scrolled
+                    if (!userHasScrolled) {
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                    }
+
+                    if (index > formattedMessage.length) {
+                        clearInterval(interval);
+                        // Add copy button after typing effect is complete
+                        copyButton.addEventListener("click", async () => {
+                            try {
+                                const textToCopy = messageElement.innerText;
+                                await navigator.clipboard.writeText(textToCopy);
+                                copyButton.innerHTML = `
                             <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
                             </svg>
-                            Copy
+                            Copied!
                         `;
-                        copyButton.classList.remove("copy-success");
-                    }, 1500);
-                } catch (err) {
-                    console.error("Failed to copy message:", err);
-                }
-            });
-            messageContainer.appendChild(copyButton);
-        }
-    }, delay);
-};
+                                copyButton.classList.add("copy-success");
+                                setTimeout(() => {
+                                    copyButton.innerHTML = `
+                                <svg class="copy-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                </svg>
+                                Copy
+                            `;
+                                    copyButton.classList.remove("copy-success");
+                                }, 1500);
+                            } catch (err) {
+                                console.error("Failed to copy message:", err);
+                            }
+                        });
+                        messageContainer.appendChild(copyButton);
+                    }
+                }, delay);
+            };
 
             const sendMessage = async () => {
                 const userMessage = chatInput.value.trim();
@@ -800,7 +555,6 @@
                 chatInput.value = "";
                 handleFirstMessage();
 
-                // Show typing indicator before making the request
                 showTypingIndicator();
 
                 try {
@@ -811,7 +565,6 @@
                     });
                     const data = await response.json();
 
-                    // Hide typing indicator before showing the response
                     hideTypingIndicator();
                     appendTypingEffect(data.response);
                 } catch (err) {
@@ -820,7 +573,6 @@
                 }
             };
 
-            // Handle predefined question button click
             const addQuestion = async (question) => {
                 appendMessage(question, "user");
                 chatInput.value = "";
@@ -844,7 +596,7 @@
                 }
             };
 
-            // SVG click event listener to send message
+            // Event listeners
             sendButton.addEventListener("click", sendMessage);
             chatInput.addEventListener("keypress", (e) => {
                 if (e.key === "Enter") sendMessage();
